@@ -7,11 +7,12 @@ const slice = createSlice({
   initialState: [],
   name: "bugs",
   reducers: {
-    bugAdded: (bugs, action) => {
+    bugAdded: (bugs, { payload }) => {
       ++lastId;
       bugs.push({
         id: lastId,
-        description: action.payload.description,
+        description: payload.description,
+        userId: payload.userId,
         resolved: false,
       });
     },
@@ -25,13 +26,15 @@ const slice = createSlice({
   },
 });
 
+const selectors = {
+  getUnresolvedBugs: createSelector(
+    (state) => state.entities.bugs,
+    (bugs) => bugs.filter((b) => !b.resolved)
+  ),
+};
+
 export default {
   actions: slice.actions,
   reducer: slice.reducer,
-  selectors: {
-    getUnresolvedBugs: createSelector(
-      (state) => state.entities.bugs,
-      (bugs) => bugs.filter((b) => !b.resolved)
-    ),
-  },
+  selectors,
 };
