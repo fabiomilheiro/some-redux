@@ -1,35 +1,37 @@
-import { produce } from "immer";
-import { createAction, createReducer } from "@reduxjs/toolkit";
-
-export const actions = {
-  bugAdded: createAction("bugAdded"),
-  bugRemoved: createAction("bugRemoved"),
-  bugResolved: createAction("bugResolved"),
-};
+import { createSlice } from "@reduxjs/toolkit";
+import { createSelector } from "reselect";
 
 let lastId = 0;
 
-const reducer = createReducer([], {
-  [actions.bugAdded]: (bugs, action) => {
-    ++lastId;
-    bugs.push({
-      id: lastId,
-      description: action.payload.description,
-      resolved: false,
-    });
-  },
-  [actions.bugRemoved]: (bugs, action) => {
-    return bugs.filter((b) => {
-      return b.id !== action.payload.id;
-    });
-  },
-  [actions.bugResolved]: (bugs, action) => {
-    const bug = bugs.find((b) => b.id === action.payload.id);
-    bug.resolved = true;
+const slice = createSlice({
+  initialState: [],
+  name: "bugs",
+  reducers: {
+    bugAdded: (bugs, action) => {
+      ++lastId;
+      bugs.push({
+        id: lastId,
+        description: action.payload.description,
+        resolved: false,
+      });
+    },
+    bugResolved: (bugs, action) => {
+      return bugs.filter((b) => b.id !== action.payload.id);
+    },
+    bugRemoved: (bugs, action) => {
+      const bug = bugs.find((b) => b.id === action.payload.id);
+      bug.resolved = true;
+    },
   },
 });
 
 export default {
-  actions,
-  reducer,
+  actions: slice.actions,
+  reducer: slice.reducer,
+  selectors: {
+    getUnresolvedBugs: createSelector(
+      (state) => state.entities.bugs,
+      (bugs) => bugs.filter((b) => !b.resolved)
+    ),
+  },
 };
