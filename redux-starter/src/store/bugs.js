@@ -35,6 +35,11 @@ const selectors = {
     (state) => state.entities.bugs,
     (bugs) => bugs.filter((b) => !b.resolved)
   ),
+  getBugsByUser: (userId) =>
+    createSelector(
+      (state) => state.entities.bugs,
+      (bugs) => bugs.filter((b) => b.userId === userId)
+    ),
 };
 
 export default {
