@@ -16,12 +16,16 @@ const slice = createSlice({
         resolved: false,
       });
     },
-    bugResolved: (bugs, action) => {
-      return bugs.filter((b) => b.id !== action.payload.id);
+    bugResolved: (bugs, { payload }) => {
+      return bugs.filter((b) => b.id !== payload.id);
     },
-    bugRemoved: (bugs, action) => {
-      const bug = bugs.find((b) => b.id === action.payload.id);
+    bugRemoved: (bugs, { payload }) => {
+      const bug = bugs.find((b) => b.id === payload.id);
       bug.resolved = true;
+    },
+    userAssigned: (bugs, { payload }) => {
+      const bug = bugs.find((b) => b.id === payload.id);
+      bug.userId = payload.userId;
     },
   },
 });
