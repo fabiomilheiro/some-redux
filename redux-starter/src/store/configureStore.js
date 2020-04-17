@@ -1,4 +1,8 @@
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import {
+  configureStore,
+  combineReducers,
+  getDefaultMiddleware,
+} from "@reduxjs/toolkit";
 import bugs from "./bugs";
 import projects from "./projects.js";
 import users from "./users";
@@ -12,5 +16,8 @@ export default function () {
       users: users.reducer,
     }),
   });
-  return configureStore({ reducer, middleware: [logger] });
+  return configureStore({
+    reducer,
+    middleware: [...getDefaultMiddleware(), logger],
+  });
 }
