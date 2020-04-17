@@ -7,14 +7,14 @@ const store = configureStore();
 
 const unsubscribe = store.subscribe(() => {});
 
-// store.dispatch((dispatch, getState) => {
-//   console.log("Executing a dispatched function.");
-//   dispatch(
-//     projects.actions.projectAdded({
-//       name: "Do a masterclass via a dispatch function",
-//     })
-//   );
-// });
+store.dispatch((dispatch, getState) => {
+  console.log("Executing a dispatched function.");
+  dispatch(
+    projects.actions.projectAdded({
+      name: "Do a masterclass via a dispatch function",
+    })
+  );
+});
 
 store.dispatch({
   type: "error",
