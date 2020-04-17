@@ -1,5 +1,5 @@
-const logger = (store) => (next) => (action) => {
-  console.log(action);
+const logger = (implementation) => (store) => (next) => (action) => {
+  console.log("Logging implementation (before):", action);
   next(action);
 };
 

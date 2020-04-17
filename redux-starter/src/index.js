@@ -7,9 +7,9 @@ const store = configureStore();
 
 const unsubscribe = store.subscribe(() => {});
 
-store.dispatch(() => {
+store.dispatch((dispatch) => {
   console.log("Executing a dispatched function.");
-  store.dispatch(
+  dispatch(
     projects.actions.projectAdded({
       name: "Do a masterclass via a dispatch function",
     })

@@ -18,6 +18,6 @@ export default function () {
   });
   return configureStore({
     reducer,
-    middleware: [...getDefaultMiddleware(), logger],
+    middleware: [logger("Console"), ...getDefaultMiddleware()],
   });
 }
