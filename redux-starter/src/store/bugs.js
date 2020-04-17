@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
 import api from "./api";
+import moment from "moment";
 
 let lastId = 0;
 
@@ -19,6 +20,7 @@ const slice = createSlice({
     bugsRequestSucceeded: (bugs, { payload }) => {
       bugs.list = payload;
       bugs.isLoading = false;
+      bugs.lastFetch = Date.now();
     },
 
     bugsRequestFailed: (bugs) => {
@@ -64,13 +66,23 @@ const selectors = {
 };
 
 const actions = {
-  loadBugs: () => {
-    return api.actions.requestStarted({
-      url: "/bugs",
-      onStart: slice.actions.bugsRequestStarted.type,
-      onSuccess: slice.actions.bugsRequestSucceeded.type,
-      onError: slice.actions.bugsRequestFailed.type,
-    });
+  loadBugs: () => (dispatch, getState) => {
+    const { lastFetch } = getState().entities.bugs;
+
+    var minutesSinceLastUpdate = moment().diff(moment(lastFetch), "minutes");
+
+    if (lastFetch && minutesSinceLastUpdate < 10) {
+      return;
+    }
+
+    return dispatch(
+      api.actions.requestStarted({
+        url: "/bugs",
+        onStart: slice.actions.bugsRequestStarted.type,
+        onSuccess: slice.actions.bugsRequestSucceeded.type,
+        onError: slice.actions.bugsRequestFailed.type,
+      })
+    );
   },
 };
 

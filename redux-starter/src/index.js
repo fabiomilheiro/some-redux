@@ -7,7 +7,9 @@ const store = configureStore();
 const unsubscribe = store.subscribe(() => {});
 
 store.dispatch(bugs.actions.loadBugs());
-
+setTimeout(() => {
+  store.dispatch(bugs.actions.loadBugs());
+}, 2000);
 // store.dispatch((dispatch, getState) => {
 //   console.log("Executing a dispatched function.");
 //   dispatch(

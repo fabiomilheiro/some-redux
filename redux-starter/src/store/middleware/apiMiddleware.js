@@ -34,7 +34,13 @@ const apiMiddleware = ({ dispatch }) => (next) => async (action) => {
       });
     }
   } catch (error) {
-    dispatch(api.actions.requestFailed(error));
+    dispatch(
+      api.actions.requestFailed({
+        message: error.message,
+        stackTrace: error.stackTrace,
+        responseText: error.responseText,
+      })
+    );
 
     if (payload.onError) {
       dispatch({
