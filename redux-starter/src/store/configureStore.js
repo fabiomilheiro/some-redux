@@ -8,6 +8,7 @@ import projects from "./projects.js";
 import users from "./users";
 import logger from "./middleware/logger";
 import toast from "./middleware/toast";
+import api from "./middleware/api";
 
 export default function () {
   const reducer = combineReducers({
@@ -19,6 +20,6 @@ export default function () {
   });
   return configureStore({
     reducer,
-    middleware: [...getDefaultMiddleware(), logger("Console"), toast],
+    middleware: [...getDefaultMiddleware(), api, logger("Console"), toast],
   });
 }

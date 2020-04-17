@@ -7,6 +7,15 @@ const store = configureStore();
 
 const unsubscribe = store.subscribe(() => {});
 
+store.dispatch({
+  type: "bugsRequested",
+  payload: {
+    url: "/bugs",
+    onSuccess: "bugsReceived",
+    onError: "bugsRequestFailed",
+  },
+});
+
 store.dispatch((dispatch, getState) => {
   console.log("Executing a dispatched function.");
   dispatch(
