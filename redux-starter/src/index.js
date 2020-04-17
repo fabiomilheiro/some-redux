@@ -2,19 +2,19 @@ import configureStore from "./store/configureStore";
 import bugs from "./store/bugs";
 import projects from "./store/projects";
 import users from "./store/users";
+import api from "./store/api";
 
 const store = configureStore();
 
 const unsubscribe = store.subscribe(() => {});
 
-store.dispatch({
-  type: "bugsRequested",
-  payload: {
+store.dispatch(
+  api.actions.requestStarted({
     url: "/bugs",
     onSuccess: "bugsReceived",
     onError: "bugsRequestFailed",
-  },
-});
+  })
+);
 
 store.dispatch((dispatch, getState) => {
   console.log("Executing a dispatched function.");
