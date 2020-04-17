@@ -21,7 +21,7 @@ const apiMiddleware = ({ dispatch }) => (next) => async (action) => {
     const response = await axios.request({
       baseURL: "http://localhost:9001/api",
       url: payload.url,
-      method: payload.mehtod || "get",
+      method: payload.method || "get",
       data: payload.data || {},
     });
 

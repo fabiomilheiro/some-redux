@@ -7,9 +7,16 @@ const store = configureStore();
 const unsubscribe = store.subscribe(() => {});
 
 store.dispatch(bugs.actions.loadBugs());
+
 setTimeout(() => {
-  store.dispatch(bugs.actions.loadBugs());
+  const action = bugs.actions.addBug({
+    description: "Some new bug",
+  });
+
+  console.log("New bug action:", action);
+  store.dispatch(action);
 }, 2000);
+
 // store.dispatch((dispatch, getState) => {
 //   console.log("Executing a dispatched function.");
 //   dispatch(

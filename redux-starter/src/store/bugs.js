@@ -3,8 +3,6 @@ import { createSelector } from "reselect";
 import api from "./api";
 import moment from "moment";
 
-let lastId = 0;
-
 const slice = createSlice({
   initialState: {
     list: [],
@@ -28,13 +26,7 @@ const slice = createSlice({
     },
 
     bugAdded: (bugs, { payload }) => {
-      ++lastId;
-      bugs.list.push({
-        id: lastId,
-        description: payload.description,
-        userId: payload.userId,
-        resolved: false,
-      });
+      bugs.list.push(payload);
     },
 
     bugResolved: (bugs, { payload }) => {
@@ -84,6 +76,14 @@ const actions = {
       })
     );
   },
+
+  addBug: (data) =>
+    api.actions.requestStarted({
+      url: "/bugs",
+      method: "post",
+      data: data,
+      onSuccess: slice.actions.bugAdded.type,
+    }),
 };
 
 export default {
