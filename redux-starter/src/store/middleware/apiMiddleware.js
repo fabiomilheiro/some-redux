@@ -6,11 +6,18 @@ const apiMiddleware = ({ dispatch }) => (next) => async (action) => {
     return next(action);
   }
 
-  next(action);
-
   const payload = action.payload;
 
   try {
+    if (payload.onStart) {
+      dispatch({
+        type: payload.onStart,
+        payload: {},
+      });
+    }
+
+    next(action);
+
     const response = await axios.request({
       baseURL: "http://localhost:9001/api",
       url: payload.url,

@@ -12,9 +12,19 @@ const slice = createSlice({
   },
   name: "bugs",
   reducers: {
-    bugsReceived: (bugs, { payload }) => {
-      bugs.list = payload;
+    bugsRequestStarted: (bugs) => {
+      bugs.isLoading = true;
     },
+
+    bugsRequestSucceeded: (bugs, { payload }) => {
+      bugs.list = payload;
+      bugs.isLoading = false;
+    },
+
+    bugsRequestFailed: (bugs) => {
+      bugs.isLoading = false;
+    },
+
     bugAdded: (bugs, { payload }) => {
       ++lastId;
       bugs.list.push({
@@ -24,13 +34,16 @@ const slice = createSlice({
         resolved: false,
       });
     },
+
     bugResolved: (bugs, { payload }) => {
       return bugs.list.filter((b) => b.id !== payload.id);
     },
+
     bugRemoved: (bugs, { payload }) => {
       const bug = bugs.list.find((b) => b.id === payload.id);
       bug.resolved = true;
     },
+
     userAssigned: (bugs, { payload }) => {
       const bug = bugs.list.find((b) => b.id === payload.id);
       bug.userId = payload.userId;
@@ -51,11 +64,14 @@ const selectors = {
 };
 
 const actions = {
-  loadBugs: () =>
-    api.actions.requestStarted({
+  loadBugs: () => {
+    return api.actions.requestStarted({
       url: "/bugs",
-      onSuccess: slice.actions.bugsReceived.type,
-    }),
+      onStart: slice.actions.bugsRequestStarted.type,
+      onSuccess: slice.actions.bugsRequestSucceeded.type,
+      onError: slice.actions.bugsRequestFailed.type,
+    });
+  },
 };
 
 export default {
