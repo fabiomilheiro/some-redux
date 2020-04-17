@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
+import api from "./api";
 
 let lastId = 0;
 
@@ -11,6 +12,9 @@ const slice = createSlice({
   },
   name: "bugs",
   reducers: {
+    bugsReceived: (bugs, { payload }) => {
+      bugs.list = payload;
+    },
     bugAdded: (bugs, { payload }) => {
       ++lastId;
       bugs.list.push({
@@ -46,8 +50,16 @@ const selectors = {
     ),
 };
 
+const actions = {
+  loadBugs: () =>
+    api.actions.requestStarted({
+      url: "/bugs",
+      onSuccess: slice.actions.bugsReceived.type,
+    }),
+};
+
 export default {
-  actions: slice.actions,
+  actions: { ...slice.actions, ...actions },
   reducer: slice.reducer,
   selectors,
 };

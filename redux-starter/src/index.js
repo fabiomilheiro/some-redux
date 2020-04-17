@@ -1,36 +1,28 @@
 import configureStore from "./store/configureStore";
 import bugs from "./store/bugs";
 import projects from "./store/projects";
-import users from "./store/users";
-import api from "./store/api";
 
 const store = configureStore();
 
 const unsubscribe = store.subscribe(() => {});
 
-store.dispatch(
-  api.actions.requestStarted({
-    url: "/bugs",
-    onSuccess: "bugsReceived",
-    onError: "bugsRequestFailed",
-  })
-);
+store.dispatch(bugs.actions.loadBugs());
 
-store.dispatch((dispatch, getState) => {
-  console.log("Executing a dispatched function.");
-  dispatch(
-    projects.actions.projectAdded({
-      name: "Do a masterclass via a dispatch function",
-    })
-  );
-});
+// store.dispatch((dispatch, getState) => {
+//   console.log("Executing a dispatched function.");
+//   dispatch(
+//     projects.actions.projectAdded({
+//       name: "Do a masterclass via a dispatch function",
+//     })
+//   );
+// });
 
-store.dispatch({
-  type: "error",
-  payload: {
-    message: "***** Something happened!",
-  },
-});
+// store.dispatch({
+//   type: "error",
+//   payload: {
+//     message: "***** Something happened!",
+//   },
+// });
 
 // store.dispatch(projects.actions.projectAdded({ name: "Build a new farm" }));
 
