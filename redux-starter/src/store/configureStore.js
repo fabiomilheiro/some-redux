@@ -7,6 +7,7 @@ import bugs from "./bugs";
 import projects from "./projects.js";
 import users from "./users";
 import logger from "./middleware/logger";
+import error from "./middleware/error";
 
 export default function () {
   const reducer = combineReducers({
@@ -18,6 +19,6 @@ export default function () {
   });
   return configureStore({
     reducer,
-    middleware: [logger("Console"), ...getDefaultMiddleware()],
+    middleware: [logger("Console"), error, ...getDefaultMiddleware()],
   });
 }
