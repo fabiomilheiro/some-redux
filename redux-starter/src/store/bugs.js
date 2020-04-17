@@ -29,13 +29,13 @@ const slice = createSlice({
       bugs.list.push(payload);
     },
 
-    bugResolved: (bugs, { payload }) => {
-      return bugs.list.filter((b) => b.id !== payload.id);
+    bugRemoved: (bugs, { payload }) => {
+      bugs.list = bugs.list.find((b) => b.id !== payload.id);
     },
 
-    bugRemoved: (bugs, { payload }) => {
-      const bug = bugs.list.find((b) => b.id === payload.id);
-      bug.resolved = true;
+    bugResolved: (bugs, { payload }) => {
+      const bug = bugs.list.filter((b) => b.id === payload.id);
+      bug.resolved = payload.resolved;
     },
 
     userAssigned: (bugs, { payload }) => {
@@ -77,12 +77,28 @@ const actions = {
     );
   },
 
-  addBug: (data) =>
+  addBug: (description) =>
     api.actions.requestStarted({
-      url: "/bugs",
+      url: "/bugs/",
       method: "post",
-      data: data,
+      data: { description: name },
       onSuccess: slice.actions.bugAdded.type,
+    }),
+
+  assignToUser: (id, userId) =>
+    api.actions.requestStarted({
+      url: `/bugs/${id}`,
+      method: "patch",
+      data: { userId },
+      onSuccess: slice.actions.userAssigned.type,
+    }),
+
+  resolveBug: (id) =>
+    api.actions.requestStarted({
+      url: `/bugs/${data.id}`,
+      method: "patch",
+      data: { resolved: true },
+      onSuccess: slice.actions.bugResolved.type,
     }),
 };
 

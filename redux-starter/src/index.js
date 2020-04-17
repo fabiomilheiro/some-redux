@@ -8,6 +8,8 @@ const unsubscribe = store.subscribe(() => {});
 
 store.dispatch(bugs.actions.loadBugs());
 
+const state = store.getState();
+
 setTimeout(() => {
   const action = bugs.actions.addBug({
     description: "Some new bug",
@@ -16,6 +18,15 @@ setTimeout(() => {
   console.log("New bug action:", action);
   store.dispatch(action);
 }, 2000);
+
+setTimeout(() => {
+  store.dispatch(bugs.actions.assignToUser(1, 2));
+  store.dispatch(bugs.actions.assignToUser(2, 2));
+  store.dispatch(bugs.actions.assignToUser(3, 1));
+  store.dispatch(bugs.actions.assignToUser(4, 1));
+
+  store.dispatch(bugs.actions.resolveBug(state.entities.bugs[6].id));
+}, 3000);
 
 // store.dispatch((dispatch, getState) => {
 //   console.log("Executing a dispatched function.");
