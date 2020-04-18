@@ -103,7 +103,7 @@ const actions = {
 };
 
 export default {
-  actions: { ...slice.actions, ...actions },
+  actions: { ...actions },
   reducer: slice.reducer,
   selectors,
 };
