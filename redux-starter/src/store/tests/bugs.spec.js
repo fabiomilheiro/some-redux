@@ -19,58 +19,59 @@ describe("Bugs", () => {
       bugsOnServer.push(newBug);
       return [200, newBug];
     });
-    axiosMock.onPatch(/\/bugs\/\d+/).reply((config) => {
-      const bug = bugsOnServer.find(
-        (b) => b.id == /\/(?<id>\d+)/.exec(config.url).groups.id
-      );
-      const patchData = JSON.parse(config.data);
+  });
 
-      if (patchData.resolved !== undefined) {
-        bug.resolved = patchData.resolved;
-      }
+  describe("Load bugs", () => {
+    it("loads the bugs on success", async () => {
+      await store.dispatch(bugs.actions.loadBugs());
 
-      if (patchData.userId !== undefined) {
-        bug.userId = patchData.userId;
-      }
-
-      return [200, bug];
+      expect(getBugs().list).toEqual(bugsOnServer);
+      expect(getBugs().isLoading).toEqual(false);
     });
   });
 
-  // describe("Load bugs", () => {
-  //   it("loads the bugs on success", async () => {
-  //     await store.dispatch(bugs.actions.loadBugs());
+  describe("Add bug", () => {
+    beforeEach(async () => {
+      await store.dispatch(bugs.actions.loadBugs());
+    });
 
-  //     expect(getBugs().list).toEqual(bugsOnServer);
-  //     expect(getBugs().isLoading).toEqual(false);
-  //   });
-  // });
+    it("updates state on success", async () => {
+      const newBug = await store.dispatch(bugs.actions.addBug("New bug"));
 
-  // describe("Add bug", () => {
-  //   beforeEach(async () => {
-  //     await store.dispatch(bugs.actions.loadBugs());
-  //   });
+      expect(getBugs().list).toContainEqual(newBug);
+    });
 
-  //   it("updates state on success", async () => {
-  //     const newBug = await store.dispatch(bugs.actions.addBug("New bug"));
+    it("does not update state on failure", async () => {
+      axiosMock = new MockAdapter(axios);
+      axiosMock.onPost().reply(500, {});
+      const previousBugList = [...getBugs().list];
 
-  //     expect(getBugs().list).toContainEqual(newBug);
-  //   });
+      await store.dispatch(bugs.actions.addBug("Bug x"));
 
-  //   it("does not update state on failure", async () => {
-  //     axiosMock = new MockAdapter(axios);
-  //     axiosMock.onPost().reply(500, {});
-  //     const previousBugList = [...getBugs().list];
-
-  //     await store.dispatch(bugs.actions.addBug("Bug x"));
-
-  //     expect(getBugs().list).toEqual(previousBugList);
-  //   });
-  // });
+      expect(getBugs().list).toEqual(previousBugList);
+    });
+  });
 
   describe("Resolve bug", () => {
     beforeEach(async () => {
       await store.dispatch(bugs.actions.loadBugs());
+
+      axiosMock.onPatch(/\/bugs\/\d+/).reply((config) => {
+        const bug = bugsOnServer.find(
+          (b) => b.id == /\/(?<id>\d+)/.exec(config.url).groups.id
+        );
+        const patchData = JSON.parse(config.data);
+
+        if (patchData.resolved !== undefined) {
+          bug.resolved = patchData.resolved;
+        }
+
+        if (patchData.userId !== undefined) {
+          bug.userId = patchData.userId;
+        }
+
+        return [200, bug];
+      });
     });
 
     it("sets the bug as resolved", async () => {
@@ -78,11 +79,14 @@ describe("Bugs", () => {
 
       await store.dispatch(bugs.actions.resolveBug(bug.id));
 
-      const updated = getBugs().list.find((b) => b.id === bug.id);
-      console.log(updated);
+      const updated = getBug(bug.id);
       expect(updated.resolved).toEqual(true);
     });
   });
+
+  function getBug(id) {
+    return getBugs().list.find((b) => b.id === id);
+  }
 
   function getBugs() {
     return store.getState().entities.bugs;

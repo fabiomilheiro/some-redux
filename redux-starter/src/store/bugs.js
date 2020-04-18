@@ -30,20 +30,24 @@ const slice = createSlice({
     },
 
     bugRemoved: (bugs, { payload }) => {
-      bugs.list = bugs.list.find((b) => b.id !== payload.id);
+      bugs.list = getBug(bugs, payload.id);
     },
 
     bugResolved: (bugs, { payload }) => {
-      const bug = bugs.list.find((b) => b.id === payload.id);
+      const bug = getBug(bugs, payload.id);
       bug.resolved = payload.resolved;
     },
 
     userAssigned: (bugs, { payload }) => {
-      const bug = bugs.list.find((b) => b.id === payload.id);
+      const bug = getBug(bugs, payload.id);
       bug.userId = payload.userId;
     },
   },
 });
+
+function getBug(bugs, id) {
+  return bugs.list.find((b) => b.id === id);
+}
 
 const selectors = {
   getUnresolvedBugs: createSelector(
