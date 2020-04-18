@@ -52,6 +52,37 @@ describe("Bugs", () => {
     });
   });
 
+  describe("Assign bug", () => {
+    beforeEach(async () => {
+      await store.dispatch(bugs.actions.loadBugs());
+
+      axiosMock.onPatch(/\/bugs\/\d+/).reply((config) => {
+        const bug = bugsOnServer.find(
+          (b) => b.id == /\/(?<id>\d+)/.exec(config.url).groups.id
+        );
+        const patchData = JSON.parse(config.data);
+        bug.userId = patchData.userId || bug.userId;
+
+        return [200, bug];
+      });
+    });
+
+    it("assigns user to the bug", async () => {
+      debugger;
+      try {
+        const bug = getBugs().list[0];
+
+        await store.dispatch(bugs.actions.assignToUser(bug.id, 555));
+
+        const updated = getBugs().list[0];
+        expect(updated.userId).toEqual(555);
+      } catch (error) {
+        const e = error;
+        debugger;
+      }
+    });
+  });
+
   describe("Resolve bug", () => {
     beforeEach(async () => {
       await store.dispatch(bugs.actions.loadBugs());
@@ -64,10 +95,6 @@ describe("Bugs", () => {
 
         if (patchData.resolved !== undefined) {
           bug.resolved = patchData.resolved;
-        }
-
-        if (patchData.userId !== undefined) {
-          bug.userId = patchData.userId;
         }
 
         return [200, bug];
