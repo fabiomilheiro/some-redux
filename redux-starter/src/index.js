@@ -1,4 +1,3 @@
-import "core-js/stable";
 import "regenerator-runtime/runtime";
 import configureStore from "./store/configureStore";
 import bugs from "./store/bugs";
