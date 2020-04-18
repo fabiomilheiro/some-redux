@@ -10,13 +10,28 @@ describe("Bugs", () => {
       store = configureStore();
     });
 
-    it("Update state on success", async () => {
+    it("Updates state on success", async () => {
       const newBug = await store.dispatch(bugs.actions.addBug("a"));
 
-      const bugList = store.getState().entities.bugs.list;
+      const bugList = getBugs().list;
 
       expect(bugList).toHaveLength(1);
-      expect(bugList[0]).toEqual(newBug);
+      expect(getBugs()).toEqual({
+        isLoading: false,
+        lastFetch: null,
+        list: [newBug],
+      });
     });
+
+    it("It does not update state on failure", async () => {
+      const previousBugs = getBugs();
+      await store.dispatch(bugs.actions.addBug());
+      const newBugs = getBugs();
+      expect(newBugs).toEqual(previousBugs);
+    });
+
+    function getBugs() {
+      return store.getState().entities.bugs;
+    }
   });
 });
