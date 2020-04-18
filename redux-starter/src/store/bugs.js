@@ -34,7 +34,7 @@ const slice = createSlice({
     },
 
     bugResolved: (bugs, { payload }) => {
-      const bug = bugs.list.filter((b) => b.id === payload.id);
+      const bug = bugs.list.find((b) => b.id === payload.id);
       bug.resolved = payload.resolved;
     },
 
@@ -79,7 +79,7 @@ const actions = {
 
   addBug: (description) =>
     api.actions.requestStarted({
-      url: "/bugs/",
+      url: "/bugs",
       method: "post",
       data: { description },
       onSuccess: slice.actions.bugAdded.type,
@@ -95,7 +95,7 @@ const actions = {
 
   resolveBug: (id) =>
     api.actions.requestStarted({
-      url: `/bugs/${data.id}`,
+      url: `/bugs/${id}`,
       method: "patch",
       data: { resolved: true },
       onSuccess: slice.actions.bugResolved.type,
@@ -103,7 +103,7 @@ const actions = {
 };
 
 export default {
-  actions: { ...actions },
+  actions,
   reducer: slice.reducer,
   selectors,
 };

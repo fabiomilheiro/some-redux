@@ -19,36 +19,68 @@ describe("Bugs", () => {
       bugsOnServer.push(newBug);
       return [200, newBug];
     });
-  });
+    axiosMock.onPatch(/\/bugs\/\d+/).reply((config) => {
+      const bug = bugsOnServer.find(
+        (b) => b.id == /\/(?<id>\d+)/.exec(config.url).groups.id
+      );
+      const patchData = JSON.parse(config.data);
 
-  describe("Load bugs", () => {
-    it("Loads the bugs on success", async () => {
-      await store.dispatch(bugs.actions.loadBugs());
+      if (patchData.resolved !== undefined) {
+        bug.resolved = patchData.resolved;
+      }
 
-      expect(getBugs().list).toEqual(bugsOnServer);
-      expect(getBugs().isLoading).toEqual(false);
+      if (patchData.userId !== undefined) {
+        bug.userId = patchData.userId;
+      }
+
+      return [200, bug];
     });
   });
 
-  describe("Add bug", () => {
+  // describe("Load bugs", () => {
+  //   it("loads the bugs on success", async () => {
+  //     await store.dispatch(bugs.actions.loadBugs());
+
+  //     expect(getBugs().list).toEqual(bugsOnServer);
+  //     expect(getBugs().isLoading).toEqual(false);
+  //   });
+  // });
+
+  // describe("Add bug", () => {
+  //   beforeEach(async () => {
+  //     await store.dispatch(bugs.actions.loadBugs());
+  //   });
+
+  //   it("updates state on success", async () => {
+  //     const newBug = await store.dispatch(bugs.actions.addBug("New bug"));
+
+  //     expect(getBugs().list).toContainEqual(newBug);
+  //   });
+
+  //   it("does not update state on failure", async () => {
+  //     axiosMock = new MockAdapter(axios);
+  //     axiosMock.onPost().reply(500, {});
+  //     const previousBugList = [...getBugs().list];
+
+  //     await store.dispatch(bugs.actions.addBug("Bug x"));
+
+  //     expect(getBugs().list).toEqual(previousBugList);
+  //   });
+  // });
+
+  describe("Resolve bug", () => {
     beforeEach(async () => {
       await store.dispatch(bugs.actions.loadBugs());
     });
 
-    it("Updates state on success", async () => {
-      const newBug = await store.dispatch(bugs.actions.addBug("New bug"));
+    it("sets the bug as resolved", async () => {
+      const bug = getBugs().list[0];
 
-      expect(getBugs().list).toContainEqual(newBug);
-    });
+      await store.dispatch(bugs.actions.resolveBug(bug.id));
 
-    it("It does not update state on failure", async () => {
-      axiosMock = new MockAdapter(axios);
-      axiosMock.onPost().reply(500, {});
-      const previousBugList = [...getBugs().list];
-
-      await store.dispatch(bugs.actions.addBug("Bug x"));
-
-      expect(getBugs().list).toEqual(previousBugList);
+      const updated = getBugs().list.find((b) => b.id === bug.id);
+      console.log(updated);
+      expect(updated.resolved).toEqual(true);
     });
   });
 
