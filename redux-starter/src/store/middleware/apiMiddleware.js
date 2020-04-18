@@ -33,6 +33,8 @@ const apiMiddleware = ({ dispatch }) => (next) => async (action) => {
         payload: response.data,
       });
     }
+
+    return response.data;
   } catch (error) {
     dispatch(
       api.actions.requestFailed({

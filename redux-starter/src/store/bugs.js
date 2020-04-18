@@ -81,7 +81,7 @@ const actions = {
     api.actions.requestStarted({
       url: "/bugs/",
       method: "post",
-      data: { description: name },
+      data: { description },
       onSuccess: slice.actions.bugAdded.type,
     }),
 

@@ -1,3 +1,5 @@
+import "core-js/stable";
+import "regenerator-runtime/runtime";
 import configureStore from "./store/configureStore";
 import bugs from "./store/bugs";
 import projects from "./store/projects";
@@ -25,7 +27,7 @@ setTimeout(() => {
   store.dispatch(bugs.actions.assignToUser(3, 1));
   store.dispatch(bugs.actions.assignToUser(4, 1));
 
-  store.dispatch(bugs.actions.resolveBug(state.entities.bugs[6].id));
+  store.dispatch(bugs.actions.resolveBug(state.entities.bugs[1].id));
 }, 3000);
 
 // store.dispatch((dispatch, getState) => {

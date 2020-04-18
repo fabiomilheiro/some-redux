@@ -22,9 +22,9 @@ export default function () {
     reducer,
     middleware: [
       ...getDefaultMiddleware(),
-      apiMiddleware,
-      logger("Console"),
+      logger({ isEnabled: false }),
       toast,
+      apiMiddleware,
     ],
   });
 }
