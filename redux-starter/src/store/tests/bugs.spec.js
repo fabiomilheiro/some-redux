@@ -107,7 +107,7 @@ describe("Bugs", () => {
   });
 
   describe("selectors", () => {
-    it("Get unresolved bugs", async () => {
+    it("Gets unresolved bugs", async () => {
       const result = bugs.selectors.getUnresolvedBugs({
         entities: {
           bugs: {
@@ -124,11 +124,25 @@ describe("Bugs", () => {
       expect(result).toEqual([{ id: 1, resolved: false }, { id: 4 }]);
     });
 
-    function getBugByDescription(store, description) {
-      return store
-        .getState()
-        .entities.bugs.list.find((b) => b.description === description);
-    }
+    it("Gets bugs by user", () => {
+      const result = bugs.selectors.getBugsByUser(1)({
+        entities: {
+          bugs: {
+            list: [
+              { id: 1, resolved: false, userId: 1 },
+              { id: 2, resolved: true, userId: 1 },
+              { id: 3, resolved: true, userId: 2 },
+              { id: 4 },
+            ],
+          },
+        },
+      });
+
+      expect(result).toEqual([
+        { id: 1, resolved: false, userId: 1 },
+        { id: 2, resolved: true, userId: 1 },
+      ]);
+    });
   });
 
   function getBug(id) {
