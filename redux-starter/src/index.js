@@ -7,12 +7,12 @@ const store = configureStore();
 
 const unsubscribe = store.subscribe(() => {});
 
-store.dispatch(bugs.actions.loadBugs());
+store.dispatch(bugs.actions.load());
 
 const state = store.getState();
 
 setTimeout(() => {
-  const action = bugs.actions.addBug({
+  const action = bugs.actions.add({
     description: "Some new bug",
   });
 
@@ -21,12 +21,12 @@ setTimeout(() => {
 }, 2000);
 
 setTimeout(() => {
-  store.dispatch(bugs.actions.assignToUser(1, 2));
-  store.dispatch(bugs.actions.assignToUser(2, 2));
-  store.dispatch(bugs.actions.assignToUser(3, 1));
-  store.dispatch(bugs.actions.assignToUser(4, 1));
+  store.dispatch(bugs.actions.assign(1, 2));
+  store.dispatch(bugs.actions.assign(2, 2));
+  store.dispatch(bugs.actions.assign(3, 1));
+  store.dispatch(bugs.actions.assign(4, 1));
 
-  store.dispatch(bugs.actions.resolve(state.entities.bugs[1].id));
+  store.dispatch(bugs.actions.resolve(1));
 }, 3000);
 
 // store.dispatch((dispatch, getState) => {
