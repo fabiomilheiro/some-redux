@@ -36,11 +36,40 @@ describe("Bugs", () => {
   });
 
   describe("Load bugs", () => {
-    it("loads the bugs on success", async () => {
+    beforeEach(() => {
+      store = configureStore();
+    });
+
+    it("shows the loading indicator while loading", () => {
+      store.dispatch(bugs.actions.load());
+
+      expect(getBugs().isLoading).toBe(true);
+    });
+
+    it("loads the bugs if no cache", async () => {
       await store.dispatch(bugs.actions.load());
 
       expect(getBugs().list).toEqual(bugsOnServer);
-      expect(getBugs().isLoading).toEqual(false);
+      expect(getBugs().isLoading).toBe(false);
+    });
+
+    it("does not load the new bugs if cached", async () => {
+      await store.dispatch(bugs.actions.load());
+      const newBug = { id: 123456 };
+      bugsOnServer.push(newBug);
+
+      await store.dispatch(bugs.actions.load());
+
+      expect(getBugs().list).not.toContainEqual(newBug);
+      expect(getBugs().isLoading).toBe(false);
+    });
+
+    it("hides the loading indicator on error", async () => {
+      axiosMock.onGet("/bugs").replyOnce(500);
+
+      await store.dispatch(bugs.actions.load());
+
+      expect(getBugs().isLoading).toBe(false);
     });
   });
 
