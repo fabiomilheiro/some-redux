@@ -108,19 +108,20 @@ describe("Bugs", () => {
 
   describe("selectors", () => {
     it("Get unresolved bugs", async () => {
-      await store.dispatch(bugs.actions.add("A"));
-      await store.dispatch(bugs.actions.add("B"));
-      await store.dispatch(bugs.actions.add("C"));
-      const bugA = getBugByDescription(store, "A");
-      const bugB = getBugByDescription(store, "B");
-      const bugC = getBugByDescription(store, "C");
-      await store.dispatch(bugs.actions.resolve(bugA.id));
+      const result = bugs.selectors.getUnresolvedBugs({
+        entities: {
+          bugs: {
+            list: [
+              { id: 1, resolved: false },
+              { id: 2, resolved: true },
+              { id: 3, resolved: true },
+              { id: 4 },
+            ],
+          },
+        },
+      });
 
-      const result = bugs.selectors.getUnresolvedBugs(store.getState());
-
-      expect(result).not.toContain(bugA);
-      expect(result).toContain(bugB);
-      expect(result).toContain(bugC);
+      expect(result).toEqual([{ id: 1, resolved: false }, { id: 4 }]);
     });
 
     function getBugByDescription(store, description) {
