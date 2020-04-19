@@ -23,7 +23,7 @@ describe("Bugs", () => {
 
   describe("Load bugs", () => {
     it("loads the bugs on success", async () => {
-      await store.dispatch(bugs.actions.loadBugs());
+      await store.dispatch(bugs.actions.load());
 
       expect(getBugs().list).toEqual(bugsOnServer);
       expect(getBugs().isLoading).toEqual(false);
@@ -32,11 +32,11 @@ describe("Bugs", () => {
 
   describe("Add bug", () => {
     beforeEach(async () => {
-      await store.dispatch(bugs.actions.loadBugs());
+      await store.dispatch(bugs.actions.load());
     });
 
     it("updates state on success", async () => {
-      const newBug = await store.dispatch(bugs.actions.addBug("New bug"));
+      const newBug = await store.dispatch(bugs.actions.add("New bug"));
 
       expect(getBugs().list).toContainEqual(newBug);
     });
@@ -46,7 +46,7 @@ describe("Bugs", () => {
       axiosMock.onPost().reply(500, {});
       const previousBugList = [...getBugs().list];
 
-      await store.dispatch(bugs.actions.addBug("Bug x"));
+      await store.dispatch(bugs.actions.add("Bug x"));
 
       expect(getBugs().list).toEqual(previousBugList);
     });
@@ -54,7 +54,7 @@ describe("Bugs", () => {
 
   describe("Assign bug", () => {
     beforeEach(async () => {
-      await store.dispatch(bugs.actions.loadBugs());
+      await store.dispatch(bugs.actions.load());
 
       axiosMock.onPatch(/\/bugs\/\d+/).reply((config) => {
         const bug = bugsOnServer.find(
@@ -72,7 +72,7 @@ describe("Bugs", () => {
       try {
         const bug = getBugs().list[0];
 
-        await store.dispatch(bugs.actions.assignToUser(bug.id, 555));
+        await store.dispatch(bugs.actions.assign(bug.id, 555));
 
         const updated = getBugs().list[0];
         expect(updated.userId).toEqual(555);
@@ -85,7 +85,7 @@ describe("Bugs", () => {
 
   describe("Resolve bug", () => {
     beforeEach(async () => {
-      await store.dispatch(bugs.actions.loadBugs());
+      await store.dispatch(bugs.actions.load());
 
       axiosMock.onPatch(/\/bugs\/\d+/).reply((config) => {
         const bug = bugsOnServer.find(
@@ -104,7 +104,7 @@ describe("Bugs", () => {
     it("sets the bug as resolved", async () => {
       const bug = getBugs().list[0];
 
-      await store.dispatch(bugs.actions.resolveBug(bug.id));
+      await store.dispatch(bugs.actions.resolve(bug.id));
 
       const updated = getBug(bug.id);
       expect(updated.resolved).toEqual(true);

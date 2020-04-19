@@ -11,34 +11,34 @@ const slice = createSlice({
   },
   name: "bugs",
   reducers: {
-    bugsRequestStarted: (bugs) => {
+    loadStarted: (bugs) => {
       bugs.isLoading = true;
     },
 
-    bugsRequestSucceeded: (bugs, { payload }) => {
+    loadSucceeded: (bugs, { payload }) => {
       bugs.list = payload;
       bugs.isLoading = false;
       bugs.lastFetch = Date.now();
     },
 
-    bugsRequestFailed: (bugs) => {
+    loadFailed: (bugs) => {
       bugs.isLoading = false;
     },
 
-    bugAdded: (bugs, { payload }) => {
+    addSucceeded: (bugs, { payload }) => {
       bugs.list.push(payload);
     },
 
-    bugRemoved: (bugs, { payload }) => {
+    removed: (bugs, { payload }) => {
       bugs.list = getBug(bugs, payload.id);
     },
 
-    bugResolved: (bugs, { payload }) => {
+    resolved: (bugs, { payload }) => {
       const bug = getBug(bugs, payload.id);
       bug.resolved = payload.resolved;
     },
 
-    userAssigned: (bugs, { payload }) => {
+    assigned: (bugs, { payload }) => {
       const bug = getBug(bugs, payload.id);
       bug.userId = payload.userId;
     },
@@ -62,7 +62,7 @@ const selectors = {
 };
 
 const actions = {
-  loadBugs: () => (dispatch, getState) => {
+  load: () => (dispatch, getState) => {
     const { lastFetch } = getState().entities.bugs;
 
     var minutesSinceLastUpdate = moment().diff(moment(lastFetch), "minutes");
@@ -74,35 +74,35 @@ const actions = {
     return dispatch(
       api.actions.requestStarted({
         url: "/bugs",
-        onStart: slice.actions.bugsRequestStarted.type,
-        onSuccess: slice.actions.bugsRequestSucceeded.type,
-        onError: slice.actions.bugsRequestFailed.type,
+        onStart: slice.actions.loadStarted.type,
+        onSuccess: slice.actions.loadSucceeded.type,
+        onError: slice.actions.loadFailed.type,
       })
     );
   },
 
-  addBug: (description) =>
+  add: (description) =>
     api.actions.requestStarted({
       url: "/bugs",
       method: "post",
       data: { description },
-      onSuccess: slice.actions.bugAdded.type,
+      onSuccess: slice.actions.addSucceeded.type,
     }),
 
-  assignToUser: (id, userId) =>
+  assign: (id, userId) =>
     api.actions.requestStarted({
       url: `/bugs/${id}`,
       method: "patch",
       data: { userId },
-      onSuccess: slice.actions.userAssigned.type,
+      onSuccess: slice.actions.assigned.type,
     }),
 
-  resolveBug: (id) =>
+  resolve: (id) =>
     api.actions.requestStarted({
       url: `/bugs/${id}`,
       method: "patch",
       data: { resolved: true },
-      onSuccess: slice.actions.bugResolved.type,
+      onSuccess: slice.actions.resolved.type,
     }),
 };
 

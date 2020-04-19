@@ -26,7 +26,7 @@ setTimeout(() => {
   store.dispatch(bugs.actions.assignToUser(3, 1));
   store.dispatch(bugs.actions.assignToUser(4, 1));
 
-  store.dispatch(bugs.actions.resolveBug(state.entities.bugs[1].id));
+  store.dispatch(bugs.actions.resolve(state.entities.bugs[1].id));
 }, 3000);
 
 // store.dispatch((dispatch, getState) => {
