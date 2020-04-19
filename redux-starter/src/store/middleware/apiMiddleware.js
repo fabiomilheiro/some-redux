@@ -36,8 +36,8 @@ const apiMiddleware = ({ dispatch }) => (next) => async (action) => {
 
     return response.data;
   } catch (error) {
-    const e = error;
-    debugger;
+    // const e = error;
+    // debugger;
 
     dispatch(
       api.actions.requestFailed({

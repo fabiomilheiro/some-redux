@@ -43,7 +43,7 @@ describe("Bugs", () => {
 
     it("does not update state on failure", async () => {
       axiosMock = new MockAdapter(axios);
-      axiosMock.onPost().reply(500, {});
+      axiosMock.onPost(/\/bugs/).reply(500);
       const previousBugList = [...getBugs().list];
 
       await store.dispatch(bugs.actions.add("Bug x"));
@@ -55,7 +55,9 @@ describe("Bugs", () => {
   describe("Assign bug", () => {
     beforeEach(async () => {
       await store.dispatch(bugs.actions.load());
+    });
 
+    it("assigns user to the bug", async () => {
       axiosMock.onPatch(/\/bugs\/\d+/).reply((config) => {
         const bug = bugsOnServer.find(
           (b) => b.id == /\/(?<id>\d+)/.exec(config.url).groups.id
@@ -65,28 +67,22 @@ describe("Bugs", () => {
 
         return [200, bug];
       });
-    });
+      const bug = getBugs().list[0];
 
-    it("assigns user to the bug", async () => {
-      debugger;
-      try {
-        const bug = getBugs().list[0];
+      await store.dispatch(bugs.actions.assign(bug.id, 555));
 
-        await store.dispatch(bugs.actions.assign(bug.id, 555));
-
-        const updated = getBugs().list[0];
-        expect(updated.userId).toEqual(555);
-      } catch (error) {
-        const e = error;
-        debugger;
-      }
+      const updated = getBugs().list[0];
+      expect(updated.userId).toEqual(555);
     });
   });
 
   describe("Resolve bug", () => {
     beforeEach(async () => {
       await store.dispatch(bugs.actions.load());
+    });
 
+    it("sets the bug as resolved if patched", async () => {
+      const bug = getBugs().list[0];
       axiosMock.onPatch(/\/bugs\/\d+/).reply((config) => {
         const bug = bugsOnServer.find(
           (b) => b.id == /\/(?<id>\d+)/.exec(config.url).groups.id
@@ -99,15 +95,21 @@ describe("Bugs", () => {
 
         return [200, bug];
       });
-    });
-
-    it("sets the bug as resolved", async () => {
-      const bug = getBugs().list[0];
 
       await store.dispatch(bugs.actions.resolve(bug.id));
 
       const updated = getBug(bug.id);
       expect(updated.resolved).toEqual(true);
+    });
+
+    it("leaves the bug as not resolved if not patched", async () => {
+      const bug = await store.dispatch(bugs.actions.add("Bug A"));
+      axiosMock.onPatch(/\/bugs\/\d+/).reply(500);
+
+      await store.dispatch(bugs.actions.resolve(bug.id));
+
+      const updated = getBug(bug.id);
+      expect(updated.resolved).toBeFalsy();
     });
   });
 
